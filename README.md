@@ -1,5 +1,5 @@
 # lwip_nat_arduino
-lwip library with NAT feature for Arduino environment
+lwip library with NAT routing feature for Arduino environment
 
 ## Install
 Install the Arduino environment for the esp8266 as described here: https://github.com/esp8266/Arduino . As you are here, you probably did this already...
@@ -11,7 +11,7 @@ Download this repo to some place. Go to the ".../packages/esp8266/hardware/esp82
 Whenever you want to use this library, select *LwIP Variant: "v1.4 Compile from source* in the "Tools" menu of the Arduino shell.
 
 ## Usage
-The new functions are exported in the "lwip/lwip_napt.h" header:
+The new NAT functions are exported in the "lwip/lwip_napt.h" header:
 
 ```
 /**
@@ -95,3 +95,32 @@ void dhcps_set_DNS(struct ip_addr *dns_ip) ICACHE_FLASH_ATTR;
 This sets the DNS server that is distributed to the stations connected to the AP interface.
 
 For an example look into: "WiFiNATRouter.ino" that sets up a basic NAT router between the AP and the STA interface (works like a basic version of https://github.com/martin-ger/esp_wifi_repeater )
+
+## Routing
+
+IPv4 also now supports a static routing table. In "ip_route.h" there are these new functions:
+```
+struct route_entry {
+    ip_addr_t ip;
+    ip_addr_t mask;
+    ip_addr_t gw;
+};
+
+/* Add a static route, true on success */
+bool ip_add_route(ip_addr_t ip, ip_addr_t mask, ip_addr_t gw);
+
+/* Remove a static route, true on success */
+bool ip_rm_route(ip_addr_t ip, ip_addr_t mask);
+
+/* Finds a route entry for an address, NULL if none */
+struct route_entry *ip_find_route(ip_addr_t ip);
+
+/* Delete all static routes */
+void ip_delete_routes(void);
+
+/* Returns the n_th entry of the routing table, true on success */
+bool ip_get_route(uint32_t no, ip_addr_t *ip, ip_addr_t *mask, ip_addr_t *gw);
+```
+
+
+

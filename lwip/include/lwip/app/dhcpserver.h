@@ -1,6 +1,10 @@
 #ifndef __DHCPS_H__
 #define __DHCPS_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define USE_DNS
 
 typedef struct dhcps_state{
@@ -113,6 +117,10 @@ void dhcps_stop(void);
 void dhcps_set_DNS(struct ip_addr *dns_ip) ICACHE_FLASH_ATTR;
 struct dhcps_pool *dhcps_get_mapping(uint16_t no) ICACHE_FLASH_ATTR;
 void dhcps_set_mapping(struct ip_addr *addr, uint8 *mac, uint32 lease_time) ICACHE_FLASH_ATTR;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 
