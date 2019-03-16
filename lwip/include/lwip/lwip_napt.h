@@ -1,19 +1,56 @@
-# lwip_nat_arduino
-lwip library with NAT feature for Arduino environment
+#ifndef __LWIP_NAPT_H__
+#define __LWIP_NAPT_H__
 
-## Install
-Install the Arduino environment for the esp8266 as described here: https://github.com/esp8266/Arduino . As you are here you probably did this already...
+#include "lwip/opt.h"
 
-This extension has been developed for the version 2.5 of the ESP8266 core. Switch to that in the Board Manager, if you havn't done already.
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-Download this repo to some place. Go to the ".../packages/esp8266/hardware/esp8266/2.5.0/tools/sdk/" dirctory of your installation. Here you rename the directory "lwip" to "lwip.orig". Then you copy the complete directory "lwip" of this repo to this place (in fact you replace "lwip" with my implementation).
+#if IP_FORWARD
+#if IP_NAPT
 
-Whenever you want to use this library, select *LwIP Variant: "v1.4 Compile from source* in the "Tools" menu of the Arduino shell.
+/* Default size of the tables used for NAPT */
+#define IP_NAPT_MAX 512
+#define IP_PORTMAP_MAX 32
 
-## Usage
-The new functions are exported in the "lwip/lwip_napt.h" header:
+/* Timeouts in sec for the various protocol types */
+#define IP_NAPT_TIMEOUT_MS_TCP (30*60*1000)
+#define IP_NAPT_TIMEOUT_MS_TCP_DISCON (20*1000)
+#define IP_NAPT_TIMEOUT_MS_UDP (2*1000)
+#define IP_NAPT_TIMEOUT_MS_ICMP (2*1000)
 
-´´´
+#define IP_NAPT_PORT_RANGE_START 49152
+#define IP_NAPT_PORT_RANGE_END   61439
+
+struct napt_table {
+  u32_t last;
+  u32_t src;
+  u32_t dest;
+  u16_t sport;
+  u16_t dport;
+  u16_t mport;
+  u8_t proto;
+  u8_t fin1 : 1;
+  u8_t fin2 : 1;
+  u8_t finack1 : 1;
+  u8_t finack2 : 1;
+  u8_t synack : 1;
+  u8_t rst : 1;
+  u16_t next, prev;
+};
+
+struct portmap_table {
+  u32_t maddr;
+  u32_t daddr;
+  u16_t mport;
+  u16_t dport;
+  u8_t proto;
+  u8 valid;
+};
+
+extern struct portmap_table *ip_portmap_table;
+
 /**
  * Allocates and initializes the NAPT tables.
  *
@@ -37,7 +74,7 @@ ip_napt_enable(u32_t addr, int enable);
 /**
  * Enable/Disable NAPT for a specified interface.
  *
- * @param netif number of the interface: 0 = STA, 1 = AP
+ * @param netif number of the interface
  * @param enable non-zero to enable NAPT, or 0 to disable.
  */
 void
@@ -85,13 +122,12 @@ ip_napt_set_tcp_timeout(u32_t secs);
  */
 void
 ip_napt_set_udp_timeout(u32_t secs);
-´´´
 
-In addition, the following extensions to the DHCP server of the AP interface might help:
-´´´
-void dhcps_set_DNS(struct ip_addr *dns_ip) ICACHE_FLASH_ATTR;
-´´´
+#endif /* IP_NAPT */
+#endif /* IP_FORWARD */
 
-This sets the DNS server that is distributed to the stations connected to the AP interface.
+#ifdef __cplusplus
+}
+#endif
 
-For an example look into: "WiFiNATRouter.ino" that sets up a basic NAT router between the AP and the STA interface (works like a basic version of https://github.com/martin-ger/esp_wifi_repeater )
+#endif /* __LWIP_NAPT_H__ */
