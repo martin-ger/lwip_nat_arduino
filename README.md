@@ -13,7 +13,7 @@ Whenever you want to use this library, select *LwIP Variant: "v1.4 Compile from 
 ## Usage
 The new functions are exported in the "lwip/lwip_napt.h" header:
 
-´´´
+```
 /**
  * Allocates and initializes the NAPT tables.
  *
@@ -85,12 +85,12 @@ ip_napt_set_tcp_timeout(u32_t secs);
  */
 void
 ip_napt_set_udp_timeout(u32_t secs);
-´´´
+```
 
 In addition, the following extensions to the DHCP server of the AP interface might help:
-´´´
+```
 void dhcps_set_DNS(struct ip_addr *dns_ip) ICACHE_FLASH_ATTR;
-´´´
+```
 
 This sets the DNS server that is distributed to the stations connected to the AP interface.
 
