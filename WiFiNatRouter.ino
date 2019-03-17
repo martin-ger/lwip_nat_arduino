@@ -51,12 +51,14 @@ void setup()
   Serial.print("AP IP address: ");
   Serial.println(myIP);
 
+  // Initialize the NAT feature
   ip_napt_init(IP_NAPT_MAX, IP_PORTMAP_MAX);
 
+  // Enable NAT on the AP interface
   ip_napt_enable_no(1, 1);
 
+  // Set the DNS server for clients of the AP to the one we also use for the STA interface
   dhcps_set_DNS(WiFi.dnsIP());
-
 }
 
 void loop()
