@@ -21,11 +21,11 @@ const int MAX_CLIENTS = 16;
 String indexHTML = "<!DOCTYPE html>"
 "<html>"
    "<head>"
-     "<title>" AP_SSID "Hotspot</title>"
+     "<title>" AP_SSID "</title>"
    "</head>"
    VIEWPORT
    "<body>"
-      "<h1>" AP_SSID " Hotspot</h1><p>"
+      "<h1>" AP_SSID "</h1><p>"
       "I accept the terms of usage.</p>"
       "<button onclick=\"window.location.href = '/accepted';\">Accept</button>"
    "</body>"
