@@ -1,6 +1,11 @@
 # lwip_nat_arduino
 lwip library with NAT routing feature for Arduino environment
 
+## Sample
+For an example look into: "WiFiNATRouter.ino" that sets up a basic NAT router between the AP and the STA interface (works like a basic version of https://github.com/martin-ger/esp_wifi_repeater ).
+
+The other example "CaptiveHotspot.ino" implements a skeleton of a hotspot with MAC filtering and a captive portal. In this sample it only asks for a confirmation of the "Terms of use" before enabling a certain MAC address. In a more sophisticated version it could ask for some credentials.
+
 ## Install
 Install the Arduino environment for the esp8266 as described here: https://github.com/esp8266/Arduino . As you are here, you probably did this already...
 
@@ -93,10 +98,6 @@ void dhcps_set_DNS(struct ip_addr *dns_ip) ICACHE_FLASH_ATTR;
 ```
 
 This sets the DNS server that is distributed to the stations connected to the AP interface.
-
-For an example look into: "WiFiNATRouter.ino" that sets up a basic NAT router between the AP and the STA interface (works like a basic version of https://github.com/martin-ger/esp_wifi_repeater ).
-
-The other example "CaptiveHotspot.ino" implements a skeleton of a hotspot with MAC filtering and a captive portal. In this sample it only asks for a confirmation of the "Terms of use" before enabling a certain MAC address. In a more sophisticated version it could ask for some credentials.
 
 ## Routing
 
