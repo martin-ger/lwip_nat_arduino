@@ -7,7 +7,7 @@ For an example look into: "WiFiNATRouter.ino" that sets up a basic NAT router be
 The other example "CaptiveHotspot.ino" implements a skeleton of a hotspot with MAC filtering and a captive portal. In this sample it only asks for a confirmation of the "Terms of use" before enabling a certain MAC address. In a more sophisticated version it could ask for some credentials.
 
 ## Install
-Install the Arduino environment for the esp8266 as described here: https://github.com/esp8266/Arduino . As you are here, you probably did this already...
+Install the Arduino environment for the esp8266 as described here: https://github.com/esp8266/Arduino . As you are here, you probably did this already. Make sure that the "make" command is installed in your environment - this is especially an issue in Windows environment.
 
 This extension has been developed for the version 2.5 of the ESP8266 core. Switch to that in the Board Manager, if you havn't done already.
 
