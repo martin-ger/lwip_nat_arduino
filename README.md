@@ -9,9 +9,9 @@ The other example "CaptiveHotspot.ino" implements a skeleton of a hotspot with M
 ## Install
 Install the Arduino environment for the esp8266 as described here: https://github.com/esp8266/Arduino . As you are here, you probably did this already. Make sure that the "make" command is installed in your environment - this is especially an issue in Windows environment.
 
-This extension has been developed for the version 2.5 of the ESP8266 core. Switch to that in the Board Manager, if you havn't done already.
+This extension has been developed for the version 2.5 of the ESP8266 core (now also tested with 2.5.2). Switch to that in the Board Manager, if you havn't done already.
 
-Download this repo to some place. Go to the ".../packages/esp8266/hardware/esp8266/2.5.0/tools/sdk/" directory of your Arduino installation. Here you rename the directory "lwip" to "lwip.orig". Then you copy the complete directory "lwip" of this repo to this place (in fact you replace "lwip" with my implementation).
+Download this repo to some place. Go to the ".../packages/esp8266/hardware/esp8266/2.5.2/tools/sdk/" directory of your Arduino installation. Here you rename the directory "lwip" to "lwip.orig". Then you copy the complete directory "lwip" of this repo to this place (in fact you replace "lwip" with my implementation).
 
 Whenever you want to use this library, select *LwIP Variant: "v1.4 Compile from source* in the "Tools" menu of the Arduino shell.
 
