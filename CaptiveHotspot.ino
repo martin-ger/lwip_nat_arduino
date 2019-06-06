@@ -52,10 +52,10 @@ ESP8266WebServer webServer(80);
 
 PACK_STRUCT_BEGIN
 struct tcp_hdr {
-  PACK_STRUCT_FIELD(u16_t src); 
-  PACK_STRUCT_FIELD(u16_t dest); 
-  PACK_STRUCT_FIELD(u32_t seqno); 
-  PACK_STRUCT_FIELD(u32_t ackno); 
+  PACK_STRUCT_FIELD(u16_t src);
+  PACK_STRUCT_FIELD(u16_t dest);
+  PACK_STRUCT_FIELD(u32_t seqno);
+  PACK_STRUCT_FIELD(u32_t ackno);
   PACK_STRUCT_FIELD(u16_t _hdrlen_rsvd_flags);
   PACK_STRUCT_FIELD(u16_t wnd);
   PACK_STRUCT_FIELD(u16_t chksum);
@@ -72,7 +72,7 @@ extern "C" {
 static netif_input_fn orig_input_ap;
 static netif_linkoutput_fn orig_output_ap;
 struct eth_addr curr_mac;
-uint32_t curr_IP;
+uint32_t curr_origIP, curr_srcIP;
 
 struct eth_addr allowed_macs[MAX_CLIENTS];
 int max_client = 0;
@@ -82,12 +82,12 @@ struct eth_hdr *mac_h;
 struct ip_hdr *ip_h;
 struct udp_hdr *udp_he;
 struct tcp_hdr *tcp_h;
-  
+
   if (p->len < sizeof(struct eth_hdr))
     return false;
 
   mac_h = (struct eth_hdr *)p->payload;
-  
+
   // Check only IPv4 traffic
   if (ntohs(mac_h->type) != ETHTYPE_IP)
     return true;
@@ -108,7 +108,7 @@ struct tcp_hdr *tcp_h;
   if (IPH_PROTO(ip_h) == IP_PROTO_UDP) {
     if (p->len < sizeof(struct eth_hdr)+sizeof(struct ip_hdr)+sizeof(struct udp_hdr))
       return false;
-    
+
     udp_he = (struct udp_hdr *)(p->payload + sizeof(struct eth_hdr) + sizeof(struct ip_hdr));
 
     if (ntohs(udp_he->dest) == DHCP_PORT)
@@ -120,16 +120,17 @@ struct tcp_hdr *tcp_h;
     return false;
   }
 
-  // HTTP is redirected  
+  // HTTP is redirected
   if (IPH_PROTO(ip_h) == IP_PROTO_TCP) {
     if (p->len < sizeof(struct eth_hdr)+sizeof(struct ip_hdr)+sizeof(struct tcp_hdr))
       return false;
-      
+
     tcp_h = (struct tcp_hdr *)(p->payload + sizeof(struct eth_hdr) + sizeof(struct ip_hdr));
-    
+
     if (ntohs(tcp_h->dest) == HTTP_PORT) {
       curr_mac = mac_h->src;
-      curr_IP = ip_h->dest.addr;
+      curr_origIP = ip_h->dest.addr;
+      curr_srcIP = ip_h->src.addr;
       ip_napt_modify_addr_tcp(tcp_h, &ip_h->dest, (uint32_t)myIP);
       ip_napt_modify_addr(ip_h, &ip_h->dest, (uint32_t)myIP);
       return true;
@@ -146,7 +147,7 @@ err_t my_input_ap (struct pbuf *p, struct netif *inp) {
     return orig_input_ap(p, inp);
   } else {
     pbuf_free(p);
-    return ERR_OK; 
+    return ERR_OK;
   }
 }
 
@@ -154,7 +155,7 @@ bool check_packet_out(struct pbuf *p) {
 struct eth_hdr *mac_h;
 struct ip_hdr *ip_h;
 struct tcp_hdr *tcp_h;
-  
+
   if (p->len < sizeof(struct eth_hdr)+sizeof(struct ip_hdr)+sizeof(struct tcp_hdr))
     return true;
 
@@ -162,15 +163,15 @@ struct tcp_hdr *tcp_h;
 
   if (IPH_PROTO(ip_h) != IP_PROTO_TCP)
     return true;
-    
+
   tcp_h = (struct tcp_hdr *)(p->payload + sizeof(struct eth_hdr) + sizeof(struct ip_hdr));
 
   // rewrite packet from our HTTP server
-  if (ntohs(tcp_h->src) == HTTP_PORT && ip_h->src.addr == (uint32_t)myIP) {
-    ip_napt_modify_addr_tcp(tcp_h, &ip_h->src, curr_IP);
-    ip_napt_modify_addr(ip_h, &ip_h->src, curr_IP);
+  if (ntohs(tcp_h->src) == HTTP_PORT && ip_h->src.addr == (uint32_t)myIP && ip_h->dest.addr == (uint32_t)curr_srcIP) {
+    ip_napt_modify_addr_tcp(tcp_h, &ip_h->src, curr_origIP);
+    ip_napt_modify_addr(ip_h, &ip_h->src, curr_origIP);
   }
-    
+
   return true;
 }
 
@@ -180,7 +181,7 @@ err_t my_output_ap (struct netif *outp, struct pbuf *p) {
     return orig_output_ap(outp, p);
   } else {
     pbuf_free(p);
-    return ERR_OK; 
+    return ERR_OK;
   }
 }
 
@@ -210,7 +211,7 @@ void setup()
   WiFi.mode(WIFI_AP_STA);
 
   Serial.println("Starting Hotspot demo");
-  
+
   WiFi.begin(sta_ssid, sta_password);
 
   //Wifi connection
@@ -261,20 +262,20 @@ void setup()
       Serial.print(curr_mac.addr[i]);Serial.print(":");
     }
     Serial.println(" allowed");
-    
+
     if (max_client < MAX_CLIENTS) {
       allowed_macs[max_client++] = curr_mac;
     }
     webServer.send(200, "text/html", acceptedHTML);
   });
-  
+
   // redirect all other URIs to our "/"
   webServer.onNotFound([]() {
     webServer.sendHeader("Location", String("http://")+myIP.toString()+String("/"), true);
     webServer.send (302, "text/plain", "");
   });
   webServer.begin();
-  
+
 }
 
 void loop()
