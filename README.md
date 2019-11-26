@@ -1,7 +1,7 @@
 # lwip_nat_arduino
 lwip library with NAT routing feature for Arduino environment
 
-*** This lib is somewhat obsolete because of the recent update of ESP8266 Arduino https://github.com/esp8266/Arduino. With this update in the master branch, the lwip2 implementiation also supports NAT routing. If you need this feature you might want to consider this option. ***
+*** This lib is somewhat obsolete because of the recent update of ESP8266 Arduino https://github.com/esp8266/Arduino. Since release 2.6.0 NAPT/NAT is part of the standard distribution. See also this example: https://github.com/esp8266/Arduino/blob/master/libraries/ESP8266WiFi/examples/RangeExtender-NAPT/RangeExtender-NAPT.ino ***
 
 ## Sample
 For an example look into: "WiFiNATRouter.ino" that sets up a basic NAT router between the AP and the STA interface (works like a basic version of https://github.com/martin-ger/esp_wifi_repeater ).
